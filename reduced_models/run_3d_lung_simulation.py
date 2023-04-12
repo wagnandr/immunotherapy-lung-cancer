@@ -76,11 +76,7 @@ class SimulationRunner:
             mesh=mesh,
             parameter=ParameterNutrients(kappa_v=0.001),
             save_at=self.output_parameters.save_at) 
-        print('before')
         nutrient_solver.assemble_2d_source_terms(vasculature, accuracy=4)
-        print('after')
-
-        exit()
 
         tumor_solver = SolverTumorPN(
             coordinates,
@@ -115,10 +111,7 @@ class SimulationRunner:
         out_frequency = int(round(self.output_parameters.dt_out/self.numerical_parameters.dt))
 
         for i in tqdm(range(1, num_time_steps+1), total=int(num_time_steps)):
-            exit()
-            print('before solve')
             solver.next()
-            exit()
 
             qoi_logger.add(solver)
 
