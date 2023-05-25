@@ -99,18 +99,18 @@ def plot_comparative_patient2(data_list, patient: int, labels):
             a.axvline(x=t_dexa, color='black', linestyle='dashed')
 
         elif patient == 2:
-            t_pau = 671 
+            t_pau = 557 
             if i == 0:
                 a.text(t_pau+10,mid,'Q6W',fontweight='bold')
             print(t_pau)
             a.axvline(x=t_pau, color='black', linestyle='dashed')
-            t_dexa = 1218 
+            t_dexa = 1104 
             print(t_dexa)
             if i == 0:
                 a.text(t_dexa+10,mid,'PD',fontweight='bold')
             a.axvline(x=t_dexa, color='black', linestyle='dashed')
             print(t_dexa)
-            t_el = 1431 
+            t_el = 1317 
             if i == 0:
                 a.text(t_el+10,mid,'EL',fontweight='bold')
             a.axvline(x=t_el, color='black', linestyle='dashed')
