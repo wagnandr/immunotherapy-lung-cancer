@@ -26,7 +26,8 @@ def FUN_positive(x):
 
 def FUN_mobility(x, y, xi):
     ''' mobility prefactor, quadratic logistic funciton with x growth and bound by 1-y with prefactor xi'''
-    return xi * ( x * (1-y) )**2
+    return xi * ( FUN_positive(x) * (1-FUN_positive(y)) )**2
+    #return xi * ( x * (1-y) )**2
     #return xi 
     #return xi * FUN_positive(x) * (1-FUN_positive(y))
 
@@ -240,7 +241,7 @@ class StupidCSVFile:
 
 
 def create_xdmf_file(filepath, name):
-    return df.XDMFFile(os.path.join(filepath, f'{name}.xmdf'))
+    return df.XDMFFile(os.path.join(filepath, f'{name}.xdmf'))
 
 
 def create_stupid_csv_file(filepath, name):
@@ -364,9 +365,9 @@ class SolverTumorPN:
         self._setup_forms(MED_0=MED_0, NUT_0=NUT_0)
     
         df.set_log_active(False)
-        # solver_parameters = {'linear_solver': 'lu'}
-        # df.solve(df.lhs(self.weak_PROMUP) == df.rhs(self.weak_PROMUP), self.PROMUP, solver_parameters=solver_parameters)
-        self._solve_proliferative()
+        solver_parameters = {'linear_solver': 'lu'}
+        df.solve(df.lhs(self.weak_PROMUP) == df.rhs(self.weak_PROMUP), self.PROMUP, solver_parameters=solver_parameters)
+        # self._solve_proliferative()
         # solve necrotic+nutrients:
         #solver_parameters ={'linear_solver': 'lu'}
         df.solve(df.lhs(self.weak_NEC) == df.rhs(self.weak_NEC), self.NEC)
@@ -522,7 +523,7 @@ class SolverNutrients:
     def reassign(self):
         self.NUT_i_0.assign(self.NUT_i)
 
-    def setup_forms(self, PRO_0):
+    def setup_forms(self, PRO_0, NEC_0):
         # proliferative parameters
         source_NUT = df.Constant(self.parameter.source_NUT)
         # source_NUT = df.Expression(f'0.2 * (x[0]+r)/(2*r) + 0.5', r=0.01, degree=1)
@@ -539,7 +540,7 @@ class SolverNutrients:
         NUT = df.TrialFunction(self.V)
         T_NUT = df.TestFunction(self.V)
 
-        alpha = alpha_healthy * FUN_positive(1 - PRO_0) + alpha_tumor * FUN_positive(PRO_0)
+        alpha = alpha_healthy * FUN_positive(1 - NEC_0 - PRO_0) + alpha_tumor * FUN_positive(PRO_0)
 
         self.weak_NUT = (
             a(kappa, NUT, T_NUT)
@@ -547,8 +548,8 @@ class SolverNutrients:
             - m(source_NUT, T_NUT)
         )
 
-    def solve(self, PRO_0):
-        self.setup_forms(PRO_0=PRO_0)
+    def solve(self, PRO_0, NEC_0):
+        self.setup_forms(PRO_0=PRO_0, NEC_0=NEC_0)
         df.set_log_active(False)
         df.solve(df.lhs(self.weak_NUT) == df.rhs(self.weak_NUT), self.NUT_i)
         df.set_log_active(True)
@@ -581,7 +582,7 @@ class SolverPN:
         self.medicine_solver = medicine_solver 
 
         # solve initial guess
-        self.nutrient_solver.solve(PRO_0=self.tumor_solver.PRO_0)
+        self.nutrient_solver.solve(PRO_0=self.tumor_solver.PRO_0, NEC_0=self.tumor_solver.NEC_0)
 
     def next(self):
         self.nutrient_solver.reassign()
@@ -589,7 +590,7 @@ class SolverPN:
         self.medicine_solver.reassign()
 
         tic = time.perf_counter()
-        self.nutrient_solver.solve(PRO_0=self.tumor_solver.PRO_0)
+        self.nutrient_solver.solve(PRO_0=self.tumor_solver.PRO_0, NEC_0=self.tumor_solver.NEC_0)
         toc = time.perf_counter()
         if self.verbose:
             print(f"needed {toc - tic:0.4f} seconds to solve nutrient model")

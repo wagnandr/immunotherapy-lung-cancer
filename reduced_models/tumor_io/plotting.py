@@ -72,7 +72,6 @@ def plot_comparative_patient1(data_list, with_error=False):
     axes[0].legend()
     for i, a in enumerate(axes):
         # plot E
-        print(exp_data.dates[0])
         t_emb = 1135 
         if i == 0:
             a.text(t_emb+10,1.5,'E',fontweight='bold')
