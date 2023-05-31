@@ -140,7 +140,7 @@ class NutrientDoubleContinuumSolver:
         f_vec.setValues(self.indices_list, self.values_list, p4py.PETSc.InsertMode.ADD)
         f_vec.assemble()
 
-    def solve(self, PRO_0):
+    def solve(self, PRO_0, NEC_0):
         phi_v, phi_i = df.TrialFunctions(self.function_space)
         psi_v, psi_i = df.TestFunctions(self.function_space)
 
@@ -168,7 +168,7 @@ class NutrientDoubleContinuumSolver:
         F += a(kappa_i, phi_i, psi_i )
         F += m(-eta_vi* phi_v, psi_i )
         F += m(eta_iv* phi_i, psi_i )
-        F += m(alpha_H * (1 - PRO_0)* phi_i, psi_i ) # TODO: cutoff!
+        F += m(alpha_H * (1 - PRO_0 - NEC_0)* phi_i, psi_i ) # TODO: cutoff!
         F += m(alpha_P * PRO_0, phi_i* psi_i) # TODO: cutoff!
 
         # additional terms for rhs
