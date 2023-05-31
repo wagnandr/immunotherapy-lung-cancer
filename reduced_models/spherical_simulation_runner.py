@@ -37,6 +37,9 @@ class SimulationRunner:
         self.solver_type = solver_type
     
     def run(self):
+        qoi_directory = generate_figure_repository_path(self.output_parameters.save_at)
+        print(f'QoI directory is {qoi_directory}')
+
         # print('running', self.tumor_model_parameters)
         initial_guess = df.Expression(('1. / (exp( a * (x[0]-r) ) + 1)', '0'), r=self.numerical_parameters.r_tumor_init, a=2000, degree=2)
 
@@ -58,9 +61,6 @@ class SimulationRunner:
 
         qoi_logger = QoILogger(threshold=0.3)
         qoi_logger.add(solver)
-
-        qoi_directory = generate_figure_repository_path(self.output_parameters.save_at)
-        print(f'QoI directory is {qoi_directory}')
 
         num_time_steps = int(self.numerical_parameters.final_time/self.numerical_parameters.dt)
         out_frequency = int(round(self.output_parameters.dt_out/self.numerical_parameters.dt))

@@ -15,7 +15,7 @@ from tumor_io.plotting import (
 from spherical_simulation_runner import SimulationRunner
 
 
-def run_patient_2(dt: float, final_time: float, therapy_type: int,  vec=None):
+def run_patient_2(dt: float, final_time: float, therapy_type: int, dosage=1., vec=None):
     if vec is None:
         vec = np.array([0.55, 1.0, 1., 20., 0.0045])
         vec = np.array([0.55, 2., 1., 20., 0.0045])
@@ -34,7 +34,7 @@ def run_patient_2(dt: float, final_time: float, therapy_type: int,  vec=None):
     landa_HN = parameters[3]
     r_tumor_init = parameters[4]
 
-    med_init = 1.2e17
+    med_init = 1.2e17 /2 * dosage
     start_therapy = 14
 
     if therapy_type == 1:
@@ -90,11 +90,11 @@ def run_patient_2(dt: float, final_time: float, therapy_type: int,  vec=None):
         MED_eff=med,
         landa_HN=landa_HN,
         MED_mas=143600,
-        MED_dos=0.2 * 2,
+        MED_dos=0.2 * dosage,
         MED_tim=22.
     )
 
-    out_params = OutputParameters(dt_out=1, save_at=f'output/spherical_patient_2/dt={dt}/ft={final_time}/tt={therapy_type}')
+    out_params = OutputParameters(dt_out=1, save_at=f'output/spherical_patient_2/dt={dt}/ft={final_time}/tt={therapy_type}/dos={dosage}')
 
 
     data = SimulationRunner(
@@ -113,11 +113,12 @@ if __name__ == '__main__':
     parser.add_argument('--dt', type=float, default=1./24.)
     parser.add_argument('--final-time', type=float, default=1800)
     parser.add_argument('--therapy-type', type=int, choices=[1, 2, 3])
+    parser.add_argument('--dosage', type=float, default=1.)
     parser.add_argument('--show', action='store_true')
 
     args = parser.parse_args()
 
-    data = run_patient_2(dt=args.dt, final_time=args.final_time, therapy_type=args.therapy_type)
+    data = run_patient_2(dt=args.dt, final_time=args.final_time, therapy_type=args.therapy_type, dosage=args.dosage)
 
     if args.show: 
         run_patient_2(final_time=args.final_time, therapy_type=int(args.therapy_type), dt=1./24.)

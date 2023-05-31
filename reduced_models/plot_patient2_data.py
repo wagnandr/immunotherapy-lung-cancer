@@ -1,6 +1,7 @@
 import os
 import pathlib
 import argparse
+import numpy as np
 import matplotlib.colors as mc
 from matplotlib import pyplot as plt
 
@@ -9,7 +10,7 @@ from tumor_io.plotting import plot_comparative_patient2
 from tumor_io.experimental_data import load_experimental_data
 
 
-def plot_comparative_patient2(data_list, patient: int, labels):
+def plot_comparative_patient2(data_list, patient: int, labels, t_end=None):
     current_dir = pathlib.Path(__file__).parent.resolve()
     if patient == 1:
         path = os.path.join(current_dir, '..', 'data/tumor/pirmin-tumor-pat1.csv')
@@ -21,6 +22,11 @@ def plot_comparative_patient2(data_list, patient: int, labels):
     exp_data = load_experimental_data(path=path,t_start=0)
 
     fig, axes = plt.subplots(3, 1, sharex=True)
+
+    if t_end is not None:
+        end_idx = np.sum(exp_data.t <= t_end)
+        exp_data.t = exp_data.t[:end_idx]
+        exp_data.volumes = exp_data.volumes[:end_idx]
 
     axes[0].plot(exp_data.t, exp_data.volumes, '-x', label='real', color='black')
 
@@ -42,6 +48,15 @@ def plot_comparative_patient2(data_list, patient: int, labels):
         t_mass = qoi_logger.tumor_mass
         p_mass = qoi_logger.proliferative_mass
         n_mass = qoi_logger.necrotic_mass
+
+        if t_end is not None:
+            end_idx = np.sum(t <= t_end)
+            t = t[:end_idx]
+            p_vis = p_vis[:end_idx]
+            d = d[:end_idx]
+            t_mass = t_mass[:end_idx]
+            p_mass = p_mass[:end_idx]
+            n_mass = n_mass[:end_idx]
 
         axes[0].plot(t, p_vis*1e6, ':', label=labels[i], color=color_list[i])
         axes[0].grid(True)
@@ -74,6 +89,7 @@ def plot_comparative_patient2(data_list, patient: int, labels):
         #axes[3].set_ylabel('nutrient mass')
     axes[0].set_xlim(left=exp_data.t[0], right=max(exp_data.t[-1], t[-1]))
     axes[0].legend(ncol=1+len(data_list))
+    axes[-1].set_xlabel('time [day]')
     for i, a in enumerate(axes):
         dates = exp_data.dates 
 
@@ -141,4 +157,4 @@ for dir in args.input_directories:
     qoi_logger.read(filepath)
     loggers.append(qoi_logger)
 
-plot_comparative_patient2(loggers, args.patient, labels)
+plot_comparative_patient2(loggers, args.patient, labels, t_end=args.t_end)

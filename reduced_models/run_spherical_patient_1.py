@@ -22,7 +22,7 @@ from spherical_simulation_runner import SimulationRunner
 def run_patient_1(dt, final_time, dosage, vec=None):
     if vec is None:
         #vec = np.array([55., 15 * 0.6, 2.])
-        vec = np.array([55., 15 * 0.65, 2.])
+        vec = np.array([52.5, 15 * 0.7, 2.])
 
     therapy_params = TherapyParameters(
         start_therapy_day=146,

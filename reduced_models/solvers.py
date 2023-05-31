@@ -245,7 +245,7 @@ def create_xdmf_file(filepath, name):
 
 
 def create_stupid_csv_file(filepath, name):
-    return df.StupidCSVFile(os.path.join(filepath, f'{name}.csv'))
+    return StupidCSVFile(os.path.join(filepath, f'{name}.csv'))
 
 
 
@@ -256,14 +256,19 @@ class SolverTumorPN:
         initial_guess: df.Expression,
         dt: float, 
         params: TumorModelParameters, 
-        save_at:str='output'
+        save_at:str='output',
+        output_file_type='csv'
     ):
         self.coordinate_system = coordinate_system
         self.initial_guess = initial_guess
         self.dt = dt
 
-        # file_factory = create_stupid_csv_file
-        file_factory = create_xdmf_file
+        if output_file_type == 'csv':
+            file_factory = create_stupid_csv_file
+        elif output_file_type == 'xdmf':
+            file_factory = create_xdmf_file
+        else:
+            raise RuntimeError('Unknown filetype ')
 
         self.file_prohyp = file_factory(save_at, 'prohyp')
         self.file_nec = file_factory(save_at, 'nec')
@@ -499,12 +504,17 @@ class SolverNutrients:
         nutrients: df.Expression,
         params: TumorModelParameters, 
         save_at:str='output',
+        output_file_type='csv'
     ):
         self.coordinate_system = coordinate_system
         self.nutrients = nutrients
 
-        # file_factory = create_stupid_csv_file
-        file_factory = create_xdmf_file
+        if output_file_type == 'csv':
+            file_factory = create_stupid_csv_file
+        elif output_file_type == 'xdmf':
+            file_factory = create_xdmf_file
+        else:
+            raise RuntimeError('Unknown filetype ')
 
         self.file_nut = file_factory(save_at, 'nut')
 

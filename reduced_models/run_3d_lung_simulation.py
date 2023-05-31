@@ -31,9 +31,9 @@ def refined_lung_mesh():
 
     radius = 0.0068 
     midpoint = df.Point(-87.5e-3, -96.9e-3, -254.3e-3)
-    #mesh = refine_locally(mesh, midpoint, 8 * radius, 2)
-    #mesh = refine_locally(mesh, midpoint, 1.5 * radius, 1)
-    #mesh = refine_locally(mesh, midpoint, 1.45 * radius, 2)
+    mesh = refine_locally(mesh, midpoint, 8 * radius, 2)
+    mesh = refine_locally(mesh, midpoint, 1.5 * radius, 1)
+    mesh = refine_locally(mesh, midpoint, 1.45 * radius, 2)
     return mesh
 
 
@@ -76,11 +76,8 @@ class SimulationRunner:
             mesh=mesh,
             parameter=ParameterNutrients(kappa_v=0.001),
             save_at=self.output_parameters.save_at) 
-        print('before')
-        nutrient_solver.assemble_2d_source_terms(vasculature, accuracy=4)
-        print('after')
 
-        exit()
+        nutrient_solver.assemble_2d_source_terms(vasculature, accuracy=4)
 
         tumor_solver = SolverTumorPN(
             coordinates,

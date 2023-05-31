@@ -12,7 +12,9 @@ def generate_figure_repository_path(base_directory):
         ite = ite + 1
         save_at = os.path.join(base_directory, str(ite))
     df.MPI.barrier(df.MPI.comm_world)
+    print('a')
     if df.MPI.rank(df.MPI.comm_world) == 0:
+        print(f'mkdirs {save_at}')
         os.makedirs(save_at, exist_ok=True)   
         shutil.copyfile(sys.argv[0],  os.path.join(save_at, 'run.py'))
     return save_at
