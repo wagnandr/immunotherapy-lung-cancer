@@ -79,6 +79,7 @@ class SolverP:
             initial_guess = self.PROMUP
         
         self.medicine_solver = MedicineSolver(params, time_therapy, self.dt, 1./24)
+        MED_0 = df.Constant(self.medicine_solver.MED_0)
 
         # proliferative parameters
         self.mob_P = mob_P = df.Constant(params.mob_P)
@@ -116,9 +117,6 @@ class SolverP:
 
         #NUT = df.Constant(1)
         NUT = self.nutrients
-
-        self.MED_0 = MED_0 = df.Constant(0) 
-        self.MED = 0
 
         weak_PRO  = (
             m(PRO, T_PRO) 
@@ -163,7 +161,6 @@ class SolverP:
 
     def next(self):
         self.PROMUP_0.assign(self.PROMUP)
-        self.MED_0.assign(self.MED)
         self.medicine_solver.reassign()
 
         df.set_log_active(False)
@@ -210,7 +207,7 @@ class SolverP:
         return df.assemble(self.coordinate_system.mass_form(sigmoid, df.Constant(1)))
 
     def get_medicine_mass(self):
-        return self.MED
+        return self.medicine_solver.MED
 
     def get_nutrient_mass(self):
         raise RuntimeError("not implemented")
