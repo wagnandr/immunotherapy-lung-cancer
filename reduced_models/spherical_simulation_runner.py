@@ -36,8 +36,8 @@ class SimulationRunner:
         self.output_parameters = output_parameters
         self.solver_type = solver_type
     
-    def run(self):
-        qoi_directory = generate_figure_repository_path(self.output_parameters.save_at)
+    def run(self, verbose=True):
+        qoi_directory = generate_figure_repository_path(self.output_parameters.save_at) if self.output_parameters.enabled else None
         print(f'QoI directory is {qoi_directory}')
 
         # print('running', self.tumor_model_parameters)
@@ -65,7 +65,7 @@ class SimulationRunner:
         num_time_steps = int(self.numerical_parameters.final_time/self.numerical_parameters.dt)
         out_frequency = int(round(self.output_parameters.dt_out/self.numerical_parameters.dt))
 
-        for i in tqdm(range(num_time_steps), total=int(num_time_steps)):
+        for i in tqdm(range(num_time_steps), total=int(num_time_steps), disable=(not verbose)):
             solver.next()
 
             qoi_logger.add(solver)

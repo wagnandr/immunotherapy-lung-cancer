@@ -19,9 +19,8 @@ from typing import List
 from spherical_simulation_runner import SimulationRunner
 
 
-def run_patient_1(dt, final_time, dosage, vec=None):
+def run_patient_1(dt, final_time, dosage, vec=None, verbose=True, output_enabled=True):
     if vec is None:
-        #vec = np.array([55., 15 * 0.6, 2.])
         vec = np.array([52.5, 15 * 0.7, 2.])
 
     therapy_params = TherapyParameters(
@@ -53,21 +52,22 @@ def run_patient_1(dt, final_time, dosage, vec=None):
         pro_P=pro_P,
         landa=landa,
         MED_eff=med,
-        landa_HN=0.1,
+        #landa_HN=0.1,
+        landa_HN=0.0,
         #MED_dos=0.240 / 8.
         MED_dos=0.240 * dosage 
         # MED_dos=0.240 / 8.
     )
 
-    out_params = OutputParameters(dt_out=1, save_at=f'output/spherical_patient_1/dt={dt}/ft={final_time}/dos={dosage}')
+    out_params = OutputParameters(dt_out=1, save_at=f'output/spherical_patient_1/dt={dt}/ft={final_time}/dos={dosage}', enabled=output_enabled)
 
     data = SimulationRunner(
         numerical_parameters=numerical_params,
         tumor_model_parameters=model_params,
         therapy_parameters=[therapy_params],
         output_parameters=out_params,
-        solver_type=create_system_PN_i
-    ).run()
+        solver_type=create_system_PN_i,
+    ).run(verbose=verbose)
 
     return data
 
