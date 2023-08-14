@@ -28,7 +28,7 @@ def plot_comparative_patient2(data_list, patient: int, labels, t_end=None):
         exp_data.t = exp_data.t[:end_idx]
         exp_data.volumes = exp_data.volumes[:end_idx]
 
-    axes[0].plot(exp_data.t, exp_data.volumes, '-x', label='real', color='black')
+    axes[0].plot(exp_data.t, exp_data.volumes, '-x', linestyle=(0, (3, 1, 1, 1, 1, 1)), label='real', color='black')
 
     color_list = list(mc.BASE_COLORS.keys())
 
@@ -58,23 +58,23 @@ def plot_comparative_patient2(data_list, patient: int, labels, t_end=None):
             p_mass = p_mass[:end_idx]
             n_mass = n_mass[:end_idx]
 
-        axes[0].plot(t, p_vis*1e6, ':', label=labels[i], color=color_list[i])
+        axes[0].plot(t, p_vis*1e6, linestyle=(0, (3, 1, 1, 1, 1, 1)), label=labels[i], color=color_list[i])
         axes[0].grid(True)
         axes[0].set_ylabel('tumor volume [$cm^3$]')
         if patient == 2:
             linewidth = len(data_list)-i
         else:
             linewidth = None
-        axes[1].plot(t, d, linewidth=linewidth, label=None, color=color_list[i])
+        axes[1].plot(t, d, linestyle='-', linewidth=linewidth, label=None, color=color_list[i])
         axes[1].grid(True)
         axes[1].set_ylabel('immunotherapy')
 
         label='tumor'
-        axes[2].plot(t, t_mass, '-', label=label, color=color_list[i])
+        axes[2].plot(t, t_mass, linestyle='dashed', label=label, color=color_list[i])
         label='proliferative'
-        axes[2].plot(t, p_mass, '--', label=label, color=color_list[i])
+        axes[2].plot(t, p_mass, linestyle='dotted', label=label, color=color_list[i])
         label='necrotic'
-        axes[2].plot(t, n_mass, ':', label=label, color=color_list[i])
+        axes[2].plot(t, n_mass, linestyle='dashdot', label=label, color=color_list[i])
         axes[2].grid(True)
         axes[2].set_ylabel('mass')
         axes[2].ticklabel_format(axis='y', style='sci', scilimits=(0,0))
@@ -144,7 +144,8 @@ parser.add_argument('--refresh', help='Refresh the plot every 3s', action='store
 args = parser.parse_args()
 
 if args.labels is None:
-    labels = [f'simulation {i}' for i in range(len(args.input_directories))]
+    labels = [None  for i in range(len(args.input_directories))]
+    #labels = [f'simulation {i}' for i in range(len(args.input_directories))]
     if len(args.input_directories) == 1:
         labels = ['simulated']
 else:
