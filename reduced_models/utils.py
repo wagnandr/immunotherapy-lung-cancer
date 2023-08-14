@@ -70,6 +70,8 @@ class QoILogger:
         return {
             'time': np.array(self.time),
             'tumor': np.array(self.tumor_mass),
+            'proliferative': np.array(self.proliferative_mass),
+            'necrotic': np.array(self.necrotic_mass),
             'tumor_visible': np.array(self.tumor_mass_visible),
             'tumor_sigmoid': np.array(self.tumor_mass_sigmoid),
             'medicine': np.array(self.medicine_mass),
