@@ -20,9 +20,9 @@ def run_patient_2(dt: float, final_time: float, therapy_type: int, dosage=1., ve
         vec = np.array([0.55, 1.0, 1., 20., 0.0045])
         vec = np.array([0.55, 2., 1., 20., 0.0045])
         vec = np.array([0.55, 1.5, 1., 20., 0.0045])
-        vec = np.array([0.55, 1.25, 1., 20., 0.0045]) # maybe
-        vec = np.array([0.55, 1.1, 1., 20., 0.0045]) # maybe
-        #vec = np.array([0.625, 1.1, 1., 20., 0.0045]) # maybe
+        vec = np.array([0.55, 1.25, 1., 20., 0.0045])   # maybe
+        vec = np.array([0.55, 1.1, 1., 20., 0.0045])    # maybe
+        #vec = np.array([0.625, 1.1, 1., 20., 0.0045])  # maybe
 
     scaling = np.array([6.87e-3, 0.499, 1, 1, 1])
 
@@ -106,6 +106,48 @@ def run_patient_2(dt: float, final_time: float, therapy_type: int, dosage=1., ve
     ).run()
 
     plot_comparative_patient2([data])
+
+
+def run_patient_2_parametrized(dt: float, final_time: float, model_params: TumorModelParameters, verbose=True, output_enabled=True):
+
+    med_init = 1.2e17 /2 * 1. 
+    start_therapy = 14
+    therapy_type=1
+
+    q3w = TherapyParameters(
+        start_therapy_day=start_therapy,
+        end_therapy_day=557,
+        drug_application_interval=7*3
+    )
+    
+    q6w = TherapyParameters(
+        start_therapy_day=557,
+        end_therapy_day=1104,
+        drug_application_interval=7*6
+    )
+
+    therapy_params = [ q3w, q6w ]
+
+    numerical_params = NumericalParameters(
+        dt=dt,
+        final_time=final_time,
+        num_elements=125 * 8,
+        r_max=0.04,
+        r_tumor_init=0.0045,
+        med_init=med_init
+    )
+
+    out_params = OutputParameters(dt_out=1, save_at=f'output', enabled=output_enabled)
+
+    data = SimulationRunner(
+        numerical_parameters=numerical_params,
+        tumor_model_parameters=model_params,
+        therapy_parameters=therapy_params,
+        output_parameters=out_params,
+        solver_type=create_system_PN_i
+    ).run(verbose=verbose)
+
+    return data
 
 
 if __name__ == '__main__':

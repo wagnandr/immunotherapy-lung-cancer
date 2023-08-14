@@ -52,14 +52,46 @@ def run_patient_1(dt, final_time, dosage, vec=None, verbose=True, output_enabled
         pro_P=pro_P,
         landa=landa,
         MED_eff=med,
-        #landa_HN=0.1,
-        landa_HN=0.0,
+        landa_HN=0.1,
+        # landa_HN=0.0,
         #MED_dos=0.240 / 8.
         MED_dos=0.240 * dosage 
         # MED_dos=0.240 / 8.
     )
 
     out_params = OutputParameters(dt_out=1, save_at=f'output/spherical_patient_1/dt={dt}/ft={final_time}/dos={dosage}', enabled=output_enabled)
+
+    data = SimulationRunner(
+        numerical_parameters=numerical_params,
+        tumor_model_parameters=model_params,
+        therapy_parameters=[therapy_params],
+        output_parameters=out_params,
+        solver_type=create_system_PN_i,
+    ).run(verbose=verbose)
+
+    return data
+
+
+def run_patient_1_parametrized(dt, final_time, model_params: TumorModelParameters, verbose=True, output_enabled=True):
+    dosage = 1.
+    therapy_params = TherapyParameters(
+        start_therapy_day=146,
+        end_therapy_day=1655-176,
+        drug_application_interval=7*2
+    )
+
+    numerical_params = NumericalParameters(
+        #dt=1/24.,
+        dt=dt,
+        #final_time=2400,
+        #final_time=2400,
+        final_time=final_time,
+        num_elements=125*4,
+        r_max=0.04,
+        r_tumor_init=0.006074216961365892
+    )
+
+    out_params = OutputParameters(dt_out=1, save_at=f'output', enabled=output_enabled)
 
     data = SimulationRunner(
         numerical_parameters=numerical_params,
